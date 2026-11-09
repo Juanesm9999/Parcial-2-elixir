@@ -55,13 +55,18 @@ elixir reporte-sismos.exs
 
 ## Lo que no fue visto en clase 
 
+## Lo que no fue visto en clase
+
+| Elemento | Lo visto en clase | Por qué se usa |
+|---|---|---|
 | `File.read` con `{:ok, _}` / `{:error, _}` | En clase se usó `File.stream!` | Permite saber si el archivo no se pudo leer sin que el programa se caiga. |
 | `Integer.parse` / `Float.parse` | En clase se usó `String.to_integer` / `String.to_float` | Devuelven un resultado en lugar de lanzar error, lo que permite rechazar la línea. |
-| `@enforce_keys` | No vimos algo similar en clase| Obliga a pasar todos los campos al crear el struct. |
-| `Time.from_iso8601` | Convierte el texto `"HH:MM:SS"` en un dato `Time` y valida que sea una hora del día. |
-| `:erlang.float_to_binary(numero, decimals: 2)` | Muestra siempre dos decimales (14.00); `Float.round` mostraría 14.0. |
-| `map_size` en una guarda y `Map.values` | Para saber cuándo llegaron las dos respuestas y revisar cuáles fallaron. |
-| `Enum.reverse` | Las líneas se agregan al inicio de la lista (`[registro \| validos]`) y al final se invierten para conservar el orden del archivo. |
+| `@enforce_keys` | No se vio en clase | Obliga a pasar todos los campos al crear el struct. |
+| `Time.from_iso8601` | No se vio en clase | Convierte el texto `"HH:MM:SS"` en un dato `Time` y valida que sea una hora del día. |
+| `:erlang.float_to_binary(numero, decimals: 2)` | No se vio en clase | Muestra siempre dos decimales (14.00); `Float.round` mostraría 14.0. |
+| `map_size` en una guarda y `Map.values` | No se vio en clase | Para saber cuándo llegaron las dos respuestas y revisar cuáles fallaron. |
+| `Enum.reverse` | No se vio en clase | Las líneas se agregan al inicio de la lista (`[registro \| validos]`) y al final se invierten para conservar el orden del archivo. |
+| `inspect` | No se vio en clase | Solo para mostrar una solicitud desconocida en el servidor. |
 
 **Nota sobre `Task`:** en clase se vio `Task.async` / `Task.await` (Procesos paralelos). El enunciado pide `spawn`, `send` y `receive`, por eso los trabajadores se implementaron con esas funciones.
 
