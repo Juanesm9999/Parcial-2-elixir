@@ -8,12 +8,12 @@ Observatorio Sismológico de la Universidad del Quindío: reporte de sismos por 
 Parcial-2-elixir/
 ├── README.md
 ├── punto-1/
-│   ├── reporte_sismos.exs     # main: genera, muestra y guarda el reporte
+│   ├── reporte-sismos.exs     # main: genera, muestra y guarda el reporte
 │   ├── coordinador.exs        # coordinación de procesos (spawn, send, receive)
 │   ├── lector.exs             # lectura de archivos y separación válidos/rechazados
 │   ├── reporte.exs            # cálculo recursivo y texto del reporte
 │   ├── structs.exs            # structs Ciudad y Movimiento con sus validaciones
-│   ├── util.ex                # módulo Util (mostrar_mensaje, mostrar_error)
+│   ├── util.exs                # módulo Util (mostrar_mensaje, mostrar_error)
 │   └── resources/
 │       ├── ciudades.txt
 │       └── movimientos.txt
