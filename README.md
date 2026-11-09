@@ -20,7 +20,7 @@ Parcial-2-elixir/
 └── punto-2/                   # (en desarrollo)
 ```
 
-`reporte_sismos.exs` carga los demás módulos con `Code.require_file`, así que **no hace falta compilar `util.ex`**.
+`reporte-sismos.exs` carga los demás módulos con `Code.require_file`, así que **no hace falta compilar `util.exs`**.
 
 ---
 
@@ -30,7 +30,7 @@ Parcial-2-elixir/
 
 ```
 cd punto-1
-elixir reporte_sismos.exs
+elixir reporte-sismos.exs
 ```
 
 - **Archivos de entrada:** `punto-1/resources/ciudades.txt` y `punto-1/resources/movimientos.txt` (campos separados por `@`, sin encabezado).
