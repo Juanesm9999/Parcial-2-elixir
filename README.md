@@ -17,8 +17,16 @@ Parcial-2-elixir/
 │   └── resources/
 │       ├── ciudades.txt
 │       └── movimientos.txt
-└── punto-2/                   # (en desarrollo)
-```
+└── punto-2/
+    ├── nodo-cliente/
+    │   ├── nodo-cliente.exs
+    │   └── util.exs
+    └── nodo-servidor/
+        ├── nodo-servidor.exs
+        ├── structs.exs, lector.exs, coordinador.exs, reporte.exs, util.exs
+        └── resources/
+            ├── ciudades.txt
+            └── movimientos.txt
 
 `reporte-sismos.exs` carga los demás módulos con `Code.require_file`, así que **no hace falta compilar `util.exs`**.
 
@@ -53,9 +61,52 @@ elixir reporte-sismos.exs
 - Se rechaza todo movimiento cuyo `idCiudad` no exista en el catálogo de ciudades válidas.
 - Si varios movimientos tienen la misma magnitud máxima, se muestra el primero que aparece en el archivo.
 
-## Lo que no fue visto en clase 
+## Punto 2 – Consulta entre nodos
 
-## Lo que no fue visto en clase
+Se necesitan *dos terminales. Primero se inicia el servidor y después el cliente. Ambos nodos deben usar **la misma cookie* (my_cookie).
+
+*Terminal 1 – servidor* (carpeta punto-2/nodo-servidor):
+
+
+cd punto-2/nodo-servidor
+elixir --sname nodoservidor@localhost --cookie cookie nodo-servidor.exs
+
+
+*Terminal 2 – cliente* (carpeta punto-2/nodo-cliente):
+
+
+cd punto-2/nodo-cliente
+elixir --sname nodocliente@localhost --cookie cookie nodo-cliente.exs
+
+
+| Nodo | Nombre del nodo | Proceso registrado |
+|---|---|---|
+| Servidor | nodoservidor@localhost | :servicio_sismos |
+| Cliente | nodocliente@localhost | :servicio_respuesta |
+
+*Cookie:* se configura con --cookie my_cookie en los dos comandos. Si las cookies son diferentes, Node.connect/1 devuelve false y el cliente muestra «No se pudo conectar con el nodo servidor».
+
+### Solicitudes que envía el cliente (en este orden)
+
+Cada mensaje tiene la forma {destino_respuesta, solicitud}, con destino_respuesta = {:servicio_respuesta, :nodocliente@localhost}.
+
+| # | Solicitud | Caso que prueba |
+|---|---|---|
+| 1 | {:reporte_ciudad, "C01"} | ciudad con movimientos (Armenia) |
+| 2 | {:reporte_ciudad, "C03"} | ciudad sin movimientos (Circasia) |
+| 3 | {:reporte_ciudad, "C99"} | ciudad inexistente → «La ciudad no está registrada» |
+| 4 | :reporte_general | reporte de todas las ciudades y rechazados |
+| 5 | :fin | el servidor confirma con :fin y el cliente termina |
+
+### Verificación
+
+1. Con el servidor encendido (terminal 1), ejecutar el cliente (terminal 2). Se muestran las cuatro respuestas en orden y el cliente termina al recibir :fin.
+2. *Sin cerrar el servidor*, ejecutar otra vez el mismo comando del cliente en la terminal 2. El servidor sigue atendiendo, porque después de responder :fin vuelve a esperar solicitudes con una llamada recursiva.
+3. Para detener el servidor: Ctrl + C dos veces en la terminal 1.
+
+El servidor lee los archivos en cada solicitud (dos trabajadores concurrentes, igual que el punto 1), reutilizando structs.exs, lector.exs, coordinador.exs y reporte.exs. Si un archivo no se puede leer, responde con un mensaje que lo identifica y sigue atendiendo.
+
+## Lo que no fue visto en clase 
 
 | Elemento | Lo visto en clase | Por qué se usa |
 |---|---|---|
@@ -67,6 +118,7 @@ elixir reporte-sismos.exs
 | `map_size` en una guarda y `Map.values` | No se vio en clase | Para saber cuándo llegaron las dos respuestas y revisar cuáles fallaron. |
 | `Enum.reverse` | No se vio en clase | Las líneas se agregan al inicio de la lista (`[registro \| validos]`) y al final se invierten para conservar el orden del archivo. |
 | `inspect` | No se vio en clase | Solo para mostrar una solicitud desconocida en el servidor. |
+| inspect | Solo para mostrar una solicitud desconocida en el servidor. |
 
 **Nota sobre `Task`:** en clase se vio `Task.async` / `Task.await` (Procesos paralelos). El enunciado pide `spawn`, `send` y `receive`, por eso los trabajadores se implementaron con esas funciones.
 
