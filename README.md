@@ -126,4 +126,32 @@ El servidor lee los archivos en cada solicitud (dos trabajadores concurrentes, i
 
 ## Reflexión sobre el uso de inteligencia artificial
 
-> Pendiente.
+1. Herramientas y agentes
+Se utilizó ChatGPT / Claude como asistente principal de consulta técnica e investigación idiomática en Elixir. Las tareas específicas desarrolladas con su apoyo fueron:
+
+Manejo defensivo de I/O y tipos: Investigación de alternativas a File.stream!, String.to_integer y String.to_float para evitar excepciones no controladas.
+
+Formateo y parseo de tipos: Consulta sobre librerías o módulos nativos para la conversión de texto a estructuras de tiempo (Time.from_iso8601) y formateo exacto de decimales (:erlang.float_to_binary).
+
+Modelado y concurrencia: Estructuración de guardas de validación (map_size) y verificación de sintaxis para el paso de mensajes con primitivas nativas (spawn, send, receive).
+
+2. Caso decisivo
+Interacción específica: Se le consultó a la IA cómo formatear un número flotante en Elixir para que siempre mostrara dos decimales (por ejemplo, transformar 14.0 a "14.00" para reportes de liquidación).
+
+Respuesta obtenida de la IA: La IA sugirió inicialmente usar Float.round(numero, 2).
+
+Verificación y adaptación: Al probar la solución en el entorno interactivo IEx, se observó que Float.round(14.0, 2) retornaba 14.0, omitiendo el cero a la derecha necesario para la presentación adecuada. Se replanteó la consulta exigiendo un formato exacto de cadena y la IA sugirió la función de la máquina virtual de Erlang :erlang.float_to_binary(numero, decimals: 2). Se verificó en IEx obteniendo "14.00", la cual se adaptó exitosamente en el código final.
+
+3. Idea diferente de la clase
+Sugerencia analizada: Sustituir la lectura directa con colapso (File.stream! y String.to_integer/to_float) por un enfoque defensivo basado en File.read con concordancia de patrones ({:ok, _} / {:error, _}) e Integer.parse/Float.parse.
+
+Aporte e implementación: Se implementó por completo. Mientras que lo visto en clase interrumpe la ejecución del proceso ante un dato mal formado o un archivo inexistente, Integer.parse/1 retorna una tupla (o :error), lo que nos permitió capturar la falla de forma limpia, ignorar o reportar la línea defectuosa y continuar con el procesamiento.
+
+Lo aprendido: Se comprendió la importancia de la programación defensiva en Elixir y el valor del pattern matching para controlar el flujo de errores explícitamente sin depender de mecanismos de manejo de excepciones (try/rescue).
+
+4. Conclusiones
+Lo que comprendemos por sí solos: Dominamos la sintaxis del pattern matching, el uso de acumuladores por la cabeza ([head | tail]) junto con Enum.reverse/1 para optimizar operaciones en tiempo $O(1)$, la creación de structs con @enforce_keys y la mecánica fundamental de comunicación entre procesos mediante spawn, send y receive.
+
+Lo que todavía nos cuesta: La coordinación fina del estado centralizado en servidores concurrentes cuando se reciben múltiples respuestas asíncronas, requiriendo un control riguroso de guardas como map_size y Map.values para evitar condiciones de carrera o bloqueos.
+
+Qué cambiaríamos en un siguiente proyecto: Adoptaríamos una arquitectura basada en GenServer y Task (cuando el enunciado lo permita) para abstraer el manejo manual de mensajes con receive, logrando un código aún más mantenible, modular y alineado con los estándares de producción de la plataforma OTP de Elixir.
